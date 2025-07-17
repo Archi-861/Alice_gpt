@@ -3,14 +3,13 @@ from gpt_api import ask_gpt
 
 app = Flask(__name__)
 
-# Типовые фразы без GPT
+
 PRESET_RESPONSES = {
     "привет": "Привет! Я GPT. Задай мне любой вопрос.",
     "помощь": "Ты можешь спросить у меня что угодно — я постараюсь ответить.",
     "что ты умеешь": "Я могу отвечать на любые вопросы, объяснять, советовать и помогать.",
 }
 
-@app.route("/alice", methods=["POST"])
 @app.route("/alice", methods=["POST"])
 def handle_alice():
     data = request.json
@@ -24,15 +23,14 @@ def handle_alice():
     else:
         answer = ask_gpt(message)
 
-    response = {
+    return jsonify({
         "response": {
             "text": answer,
             "end_session": False
         },
         "version": version
-    }
+    })
 
-    return jsonify(response)
 
 
 # Пинг эндпоинт для автопрогрева
