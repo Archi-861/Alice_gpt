@@ -11,10 +11,11 @@ PRESET_RESPONSES = {
 }
 
 @app.route("/alice", methods=["POST"])
+@app.route("/alice", methods=["POST"])
 def handle_alice():
     data = request.json
+    version = data.get("version", "1.0")
     message = data.get("request", {}).get("original_utterance", "").strip().lower()
-    version = data.get("version")
 
     if not message:
         answer = "Привет! Скажи что-нибудь, и я передам это GPT."
@@ -23,13 +24,16 @@ def handle_alice():
     else:
         answer = ask_gpt(message)
 
-    return jsonify({
+    response = {
         "response": {
             "text": answer,
             "end_session": False
         },
         "version": version
-    })
+    }
+
+    return jsonify(response)
+
 
 # Пинг эндпоинт для автопрогрева
 @app.route("/ping", methods=["GET"])
