@@ -1,14 +1,6 @@
 from flask import Flask, request, jsonify
-from gpt_api import ask_gpt
 
 app = Flask(__name__)
-
-
-PRESET_RESPONSES = {
-    "привет": "Привет! Я GPT. Задай мне любой вопрос.",
-    "помощь": "Ты можешь спросить у меня что угодно — я постараюсь ответить.",
-    "что ты умеешь": "Я могу отвечать на любые вопросы, объяснять, советовать и помогать.",
-}
 
 @app.route("/alice", methods=["POST"])
 def handle_alice():
@@ -16,24 +8,22 @@ def handle_alice():
     version = data.get("version", "1.0")
     message = data.get("request", {}).get("original_utterance", "").strip().lower()
 
+    # Всегда возвращаем безопасный ответ
     if not message:
-        answer = "Привет! Скажи что-нибудь, и я передам это GPT."
-    elif message in PRESET_RESPONSES:
-        answer = PRESET_RESPONSES[message]
+        answer = "Привет! Скажи что-нибудь, и я попробую ответить."
     else:
-        answer = ask_gpt(message)
+        answer = f"Вы сказали: {message}"
 
-    return jsonify({
+    response = {
         "response": {
             "text": answer,
             "end_session": False
         },
         "version": version
-    })
+    }
 
+    return jsonify(response)
 
-
-# Пинг эндпоинт для автопрогрева
 @app.route("/ping", methods=["GET"])
 def ping():
     return "pong", 200
